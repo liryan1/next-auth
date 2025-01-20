@@ -38,7 +38,7 @@ const defaultValues = {
 export function LoginForm() {
   const session = useSession();
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (session?.status === 'authenticated') {
