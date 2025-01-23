@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LogInIcon } from "lucide-react";
+import { CircleAlertIcon, LogInIcon } from "lucide-react";
 import { signIn, useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
@@ -20,6 +20,7 @@ import { LogoWithText } from "../Logo";
 import { Spinner } from "../Spinner";
 import { Input } from "../ui/input";
 import Image from "next/image";
+import { logStack } from "@/lib/utils";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -51,12 +52,21 @@ export function LoginForm() {
     defaultValues,
   })
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setLoading(true)
-    signIn('credentials', { ...data, redirect: false })
-      .then(() => router.push("/"))
-      .catch(error => console.log(error))
-      .finally(() => setLoading(false))
+    try {
+      const response = await signIn('credentials', { ...data, redirect: false })
+      if (response?.error) {
+        form.setError('root', { message: response.error })
+      }
+      if (response?.ok) {
+        router.push("/")
+      }
+    } catch (error) {
+      logStack(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const socialAction = (action: 'google' | 'github') => signIn(action, { redirect: false })
@@ -78,6 +88,12 @@ export function LoginForm() {
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {form.formState.errors.root && (
+              <div className="flex items-center text-red-600 text-sm gap-1">
+                <CircleAlertIcon className="h-4 w-4" />
+                {form.formState.errors.root.message}
+              </div>
+            )}
             <FormField
               control={form.control}
               name="email"

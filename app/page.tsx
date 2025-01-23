@@ -1,7 +1,7 @@
 
 export default async function Home() {
   return (
-    <div>
+    <div className="mx-auto pt-6">
       Public HomePage
     </div>
   );

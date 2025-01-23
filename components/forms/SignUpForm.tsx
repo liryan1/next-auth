@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form"
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from "../ui/input";
+import { logStack } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -71,7 +72,7 @@ export function SignUpForm() {
       })
       router.push("/")
     } catch (error) {
-      console.log("Error:", error)
+      logStack(error)
     } finally {
       setLoading(false)
     }

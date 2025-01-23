@@ -7,7 +7,7 @@ export default async function APIFromServer() {
   }).then((res) => res.json());
 
   return (
-    <div>
+    <div className="mx-auto pt-6">
       <p>
         API Route From <span className="font-bold underline">Server</span>
       </p>
